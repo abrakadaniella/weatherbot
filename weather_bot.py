@@ -1,7 +1,7 @@
 import telebot
 import requests
 import json
-from config import token
+from config import token, appid
 
 bot = telebot.TeleBot(token)
 
@@ -29,7 +29,7 @@ If you want to know the weather at some city, type only the name of the city, co
 
 @bot.message_handler(content_types=["location"])
 def location_btn(message):
-    url = requests.get("https://api.openweathermap.org/data/2.5/weather?lat={}&lon={}&appid=e395731afdbc105951e43d2d535427bf".format(message.location.latitude, message.location.longitude))
+    url = requests.get("https://api.openweathermap.org/data/2.5/weather?lat={}&lon={}&appid={}".format(message.location.latitude, message.location.longitude, appid))
     content = url.content
     js = json.loads(content)
     cur_weather = js['weather'][0]['main']
@@ -49,7 +49,7 @@ cat_cities = ['Betya', 'Motya', 'Begemot', 'Motilda', 'Leonid', 'Debil', 'Matild
 @bot.message_handler(content_types=['text'])
 def city_weather(message):
     if message.text not in cat_cities:
-        url = requests.get("https://api.openweathermap.org/data/2.5/weather?q={}&appid=e395731afdbc105951e43d2d535427bf".format(message.text))
+        url = requests.get("https://api.openweathermap.org/data/2.5/weather?q={}&appid={}".format(message.text, appid))
         content = url.content
         js = json.loads(content)
         if js['cod'] != 200:
@@ -67,7 +67,7 @@ Temperature: {temp}
 Air humidity: {hum}
 Wind speed: {wind}""".format(city = city_name, temp = temperature_c, hum = humidity, wind = wind_speed, weath = cur_weather, desc = description))
     elif message.text in cat_cities:
-        url = requests.get("https://api.openweathermap.org/data/2.5/weather?q=Nur-Sultan&appid=e395731afdbc105951e43d2d535427bf")
+        url = requests.get("https://api.openweathermap.org/data/2.5/weather?q=Nur-Sultan&appid={}".format(appid))
         content = url.content
         js = json.loads(content)
         cur_weather = js['weather'][0]['main']
@@ -83,4 +83,4 @@ Air humidity: {hum}
 Wind speed: {wind}""".format(city = city_name, temp = temperature_c, hum = humidity, wind = wind_speed, weath = cur_weather, desc = description))
     
     
-bot.polling(timeout = 0.5)
+bot.polling()
